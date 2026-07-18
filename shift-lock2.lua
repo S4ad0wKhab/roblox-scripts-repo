@@ -14,9 +14,7 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
 -- ตรวจสอบว่าเป็นอุปกรณ์จอสัมผัส (มือถือ) หรือไม่ (เพื่อซ่อน/แสดงปุ่มให้ถูกประเภทอุปกรณ์)
-if not UserInputService.TouchEnabled then
-	return
-end
+local isMobile = UserInputService.TouchEnabled
 
 -- ปุ่ม Shift Lock (ตำแหน่งข้างๆ ปุ่มกระโดดของมือถือ)
 local shiftButton = Instance.new("ImageButton")
