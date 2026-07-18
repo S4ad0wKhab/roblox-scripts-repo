@@ -1,13 +1,3 @@
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-
-if not UserInputService.TouchEnabled then
-	return
-end
-
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
 -- รอให้ JumpButton โหลด
 local jumpButton
 repeat
