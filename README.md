@@ -1,5 +1,9 @@
 # roblox-scripts-repo
 ```
+loadstring(game:HttpGet("https://raw.githubusercontent.com/S4ad0wKhab/roblox-scripts-repo/refs/heads/main/PLUGINEXAMPLE_SecretServicePanel.lua"))()
+```
+and
+```
 loadstring(game:HttpGet("https://raw.githubusercontent.com/S4ad0wKhab/roblox-scripts-repo/refs/heads/main/DexPlusPlus.lua"))()
 ```
 
