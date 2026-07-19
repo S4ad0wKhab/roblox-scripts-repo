@@ -87,5 +87,10 @@ Section:NewButton("Update Dropdown", "Refreshes Dropdown", function()
   dropdown:Refresh(newList)
 end)
 
+-- ตัวเลือกสี --
+Section:NewColorPicker("Color Text", "Color Info", Color3.fromRGB(0,0,0), function(color)
+    print(color)
+    -- Second argument is the default color
+end)
 
 
