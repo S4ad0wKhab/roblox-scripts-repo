@@ -65,12 +65,53 @@ ok:Box("JumpSpeed", function(object, focus)
 end)
 
 ------------------------------------------------------------------------
-local coreGui = game:GetService("CoreGui")
-local screenGui = coreGui:FindFirstChild("ScreenGui")
-if screenGui then
-    local mainFrame = screenGui:FindFirstChild("main")
+task.spawn(function()
+    local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
+    local CoreGui = game:GetService("CoreGui")
+    
+    -- รอให้หน้าต่างหลักถูกสร้างขึ้นมาใน CoreGui ก่อน
+    local screenGui = CoreGui:WaitForChild("ScreenGui", 5)
+    local mainFrame = screenGui and screenGui:WaitForChild("main", 5)
+    
     if mainFrame then
-        -- เรียกใช้ฟังก์ชันดรากเกอร์ที่ไลบารีทำทิ้งไว้ในระบบมาผูกกับเฟรมหลัก
-        dragger.new(mainFrame)
+        local dragging, dragInput, dragStart, startPos
+        
+        -- ดักจับตอนเอาเมาส์คลิกซ้ายลงบนหน้าต่างเพื่อเริ่มลาก
+        mainFrame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = mainFrame.Position
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+        
+        -- ดักจับตอนขยับเมาส์
+        mainFrame.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                dragInput = input
+            end
+        end)
+        
+        -- อัปเดตตำแหน่งหน้าต่างตามเมาส์แบบสมูท (ไม่หลุดแม้สะบัดเมาส์ไว)
+        UserInputService.InputChanged:Connect(function(input)
+            if input == dragInput and dragging then
+                local delta = input.Position - dragStart
+                local targetPosition = UDim2.new(
+                    startPos.X.Scale, 
+                    startPos.X.Offset + delta.X, 
+                    startPos.Y.Scale, 
+                    startPos.Y.Offset + delta.Y
+                )
+                -- ใช้ Tween เพื่อความลื่นไหลเวลารัน
+                TweenService:Create(mainFrame, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = targetPosition}):Play()
+            end
+        end)
     end
-end
+end)
