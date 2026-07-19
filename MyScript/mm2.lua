@@ -2,17 +2,17 @@ local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jen
 
 local Window = OrionLib:MakeWindow({Name = "S4ad0wKhab's MM2 Script (Beta 1.0)", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
 
+local Tab = Window:MakeTab({
+	Name = "Home",
+	Icon = "rbxassetid://77451122306832",
+	PremiumOnly = false
+})
+
 OrionLib:MakeNotification({
 	Name = "MM2 Script By S4ad0wKhab!",
 	Content = "Beta 1.0 is a test version; please let me know if you encounter any issues!",
 	Image = "rbxassetid://116152473553878",
 	Time = 5
-})
-
-local Tab = Window:MakeTab({
-	Name = "Home",
-	Icon = "rbxassetid://77451122306832",
-	PremiumOnly = false
 })
 
 local Section = Tab:AddSection({
@@ -90,3 +90,5 @@ Tab:AddTextbox({
 		    end
 		end)
 })
+		
+OrionLib:Init()
