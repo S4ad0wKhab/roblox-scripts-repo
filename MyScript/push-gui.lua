@@ -4,8 +4,7 @@ local w = Library:Window("Push Gui 1.0 (R6)")
 
 w:Button("Button", function()
     local ANIMATION_ID = "rbxassetid://10506078364" 
-    local FLING_FORCE = 300 -- ปรับแรงขึ้นเพื่อความสะใจ
-    local FLING_RADIUS = 15
+    local FLING_RADIUS = 8 -- ระยะห่างที่จะล็อคเป้าหมายไปผลัก (หน่วยเป็น Studs)
 
     local Players = game:GetService("Players")
     local LocalPlayer = Players.LocalPlayer
@@ -14,42 +13,64 @@ w:Button("Button", function()
     local RootPart = Character:FindFirstChild("HumanoidRootPart")
 
     if Humanoid and RootPart then
-        -- เล่นแอนิเมชันผลัก
+        -- 1. เล่นแอนิเมชันผลักขำๆ ของเราก่อน
         local anim = Instance.new("Animation")
         anim.AnimationId = ANIMATION_ID
         local animTrack = Humanoid:LoadAnimation(anim)
         animTrack:Play()
         
-        -- วนลูปหาคนโดนผลัก
+        -- 2. ค้นหาเป้าหมายที่อยู่ใกล้ที่สุด
+        local targetRoot = nil
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character then
-                local targetChar = player.Character
-                local targetRoot = targetChar:FindFirstChild("HumanoidRootPart")
-                local targetHum = targetChar:FindFirstChildOfClass("Humanoid")
+                local tChar = player.Character
+                local tRoot = tChar:FindFirstChild("HumanoidRootPart")
+                local tHum = tChar:FindFirstChildOfClass("Humanoid")
                 
-                if targetRoot and targetHum and targetHum.Health > 0 then
-                    local distance = (RootPart.Position - targetRoot.Position).Magnitude
-                    
+                if tRoot and tHum and tHum.Health > 0 then
+                    local distance = (RootPart.Position - tRoot.Position).Magnitude
                     if distance <= FLING_RADIUS then
-                        -- บังคับให้ระบบฟิสิกส์จำลองสถานะตกใจ (ทำให้แรงผลักทำงานได้ฝั่ง Client)
-                        targetHum:ChangeState(Enum.HumanoidStateType.Physics)
-                        
-                        -- คำนวณทิศทางพุ่งกระเด็น
-                        local pushDirection = (targetRoot.Position - RootPart.Position).Unit
-                        local velocityVector = (pushDirection * FLING_FORCE) + Vector3.new(0, FLING_FORCE * 0.8, 0)
-                        
-                        -- ใส่แรงผลักมหาศาล
-                        local bodyVelocity = Instance.new("BodyVelocity")
-                        bodyVelocity.Velocity = velocityVector
-                        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge) -- ใช้แรงอินฟินิตี้
-                        bodyVelocity.P = 5000
-                        bodyVelocity.Parent = targetRoot
-                        
-                        -- ทำลายแรงทิ้งหลังจากกระเด็นไปแล้ว
-                        game:GetService("Debris"):AddItem(bodyVelocity, 0.2)
+                        targetRoot = tRoot
+                        break -- เจอคนแรกในระยะแล้วเลือกเลย
                     end
                 end
             end
+        end
+
+        -- 3. ถ้าระยะได้... เริ่มกระบวนการฟิสิกส์มหาประลัย (บั๊กผลัก)
+        if targetRoot then
+            -- บันทึกตำแหน่งเดิมของเราไว้เพื่อวาร์ปกลับมาหลังผลักเสร็จ
+            local oldPosition = RootPart.CFrame
+            
+            -- สร้างแรงหมุนความเร็วสูงที่ตัวเรา (ทำให้เรากลายเป็นกงจักร)
+            local angularVelocity = Instance.new("BodyAngularVelocity")
+            angularVelocity.AngularVelocity = Vector3.new(0, 99999, 0) -- หมุนแนวนอนเร็วสุดขีด
+            angularVelocity.MaxTorque = Vector3.new(0, math.huge, 0)
+            angularVelocity.Parent = RootPart
+
+            -- สร้างแรงพุ่งตัว
+            local bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+            bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bodyVelocity.Parent = RootPart
+
+            -- ล็อคตัวเราพุ่งไปกระแทกเป้าหมายเป็นเวลา 0.3 วินาที (เสี้ยววินาทีจนมองไม่ทัน)
+            local startTime = tick()
+            while tick() - startTime < 0.3 do
+                task.wait()
+                if targetRoot and targetRoot.Parent then
+                    -- วาร์ปตัวเราไปประกบข้างๆ เป้าหมายพร้อมหมุนติ้วเพื่อผลักให้ปลิว
+                    RootPart.CFrame = targetRoot.CFrame * CFrame.new(0, 0, 1)
+                    bodyVelocity.Velocity = Vector3.new(0, 50, 0) -- แอบเสยขึ้นฟ้า
+                else
+                    break
+                end
+            end
+
+            -- ผลักเสร็จแล้ว ทำลายแรงฟิสิกส์ทิ้ง และวาร์ปเรากลับมาจุดเดิมเนียนๆ
+            angularVelocity:Destroy()
+            bodyVelocity:Destroy()
+            RootPart.CFrame = oldPosition
         end
     end
 end)
