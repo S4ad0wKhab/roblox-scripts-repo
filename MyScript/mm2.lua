@@ -11,17 +11,30 @@ ok:Button("a",function()
 end)
 
 ok:Box("WalkSpeed", function(object, focus)
- if focus then
-     game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(object.Text) or 16
- end
+    if focus then
+        -- แปลงข้อความที่พิมพ์เป็นตัวเลข ถ้าพิมพ์มั่วจะใช้ค่า 16
+        local val = tonumber(object.Text) or 16
+        _G.SavedWalkSpeed = val -- บันทึกค่าลงตัวแปรส่วนกลาง
+        
+        -- ปรับความเร็วตัวละครปัจจุบันทันที
+        local hum = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = val
+        end
+    end
 end)
 
 ok:Box("JumpSpeed", function(object, focus)
     if focus then
-        local humanoid = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.UseJumpPower = true
-            humanoid.JumpPower = tonumber(object.Text) or 50
+        -- แปลงค่าที่พิมพ์เป็นตัวเลข ถ้าพิมพ์มั่วให้กลับไป 50
+        local val = tonumber(object.Text) or 50
+        _G.SavedJumpPower = val -- บันทึกค่าใหม่ไว้ในตัวแปรส่วนกลาง
+        
+        -- อัปเดตตัวละครปัจจุบันทันที
+        local hum = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.UseJumpPower = true
+            hum.JumpPower = val
         end
     end
 end)
