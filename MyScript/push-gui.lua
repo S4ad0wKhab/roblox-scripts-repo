@@ -3,10 +3,9 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/blood
 local w = Library:Window("Push Gui 1.0 (R6)")
 
 w:Button("Button", function()
-    -- รหัส Animation ID (แก้ไขให้ใส่ // เรียบร้อยแล้ว)
     local ANIMATION_ID = "rbxassetid://10506078364" 
-    local FLING_FORCE = 150 -- ความแรงในการผลัก
-    local FLING_RADIUS = 6 -- ระยะห่างที่จะโดนผลัก (หน่วยเป็น Studs)
+    local FLING_FORCE = 300 -- ปรับแรงขึ้นเพื่อความสะใจ
+    local FLING_RADIUS = 15
 
     local Players = game:GetService("Players")
     local LocalPlayer = Players.LocalPlayer
@@ -15,13 +14,13 @@ w:Button("Button", function()
     local RootPart = Character:FindFirstChild("HumanoidRootPart")
 
     if Humanoid and RootPart then
-        -- 1. เล่น Animation ผลัก
+        -- เล่นแอนิเมชันผลัก
         local anim = Instance.new("Animation")
         anim.AnimationId = ANIMATION_ID
         local animTrack = Humanoid:LoadAnimation(anim)
         animTrack:Play()
         
-        -- 2. ค้นหาผู้เล่นที่อยู่ใกล้ๆ เพื่อผลักกระเด็น
+        -- วนลูปหาคนโดนผลัก
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character then
                 local targetChar = player.Character
@@ -29,35 +28,28 @@ w:Button("Button", function()
                 local targetHum = targetChar:FindFirstChildOfClass("Humanoid")
                 
                 if targetRoot and targetHum and targetHum.Health > 0 then
-                    -- คำนวณระยะห่างระหว่างเรากับเป้าหมาย
                     local distance = (RootPart.Position - targetRoot.Position).Magnitude
                     
                     if distance <= FLING_RADIUS then
-                        -- คำนวณทิศทางที่จะผลัก (ผลักออกจากตัวเรา + เสยขึ้นฟ้าเพิ่มความขำขัน)
-                        local pushDirection = (targetRoot.Position - RootPart.Position).Unit
-                        local velocityVector = (pushDirection * FLING_FORCE) + Vector3.new(0, FLING_FORCE * 0.6, 0)
+                        -- บังคับให้ระบบฟิสิกส์จำลองสถานะตกใจ (ทำให้แรงผลักทำงานได้ฝั่ง Client)
+                        targetHum:ChangeState(Enum.HumanoidStateType.Physics)
                         
-                        -- สร้างแรงฟิสิกส์เพื่อผลักตัวเป้าหมาย
+                        -- คำนวณทิศทางพุ่งกระเด็น
+                        local pushDirection = (targetRoot.Position - RootPart.Position).Unit
+                        local velocityVector = (pushDirection * FLING_FORCE) + Vector3.new(0, FLING_FORCE * 0.8, 0)
+                        
+                        -- ใส่แรงผลักมหาศาล
                         local bodyVelocity = Instance.new("BodyVelocity")
                         bodyVelocity.Velocity = velocityVector
-                        bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
-                        bodyVelocity.P = 1250
+                        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge) -- ใช้แรงอินฟินิตี้
+                        bodyVelocity.P = 5000
                         bodyVelocity.Parent = targetRoot
                         
-                        -- ทำลายแรงผลักทิ้งหลังจากผ่านไป 0.2 วินาที
+                        -- ทำลายแรงทิ้งหลังจากกระเด็นไปแล้ว
                         game:GetService("Debris"):AddItem(bodyVelocity, 0.2)
                     end
                 end
             end
         end
-    end -- <-- คุณลืมใส่ end ตัวนี้เพื่อปิด if 
-end) -- <-- ปิด function ของ Button ให้ถูกต้อง
-
-w:ButtonName("Script By S4ad0wKhab", function()
-end)
-  
-w:ButtonName("Library Load Code By x2Swiftz", function()
-end)
-
-w:ButtonName("Library Made By ?", function()
+    end
 end)
