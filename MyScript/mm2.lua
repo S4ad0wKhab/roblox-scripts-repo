@@ -50,3 +50,43 @@ Tab:AddTextbox({
             end
         end)
 })
+
+Tab:AddTextbox({
+	Name = "Jump",
+	Default = "50",
+	TextDisappear = true,
+	Callback = function(Value)
+		-- แปลงข้อความให้เป็นตัวเลข ถ้านึกสนุกพิมพ์มั่วจะปรับเป็นค่าเริ่มต้น (50)
+		local jumpValue = tonumber(Value) or 50
+
+		local Players = game:GetService("Players")
+		local LocalPlayer = Players.LocalPlayer
+
+		-- ฟังก์ชันสำหรับตั้งค่าแรงกระโดดและเปิดระบบ JumpPower
+		local function applyJump(character)
+		    local humanoid = character:FindFirstChildOfClass("Humanoid")
+		    if humanoid then
+		        humanoid.UseJumpPower = true -- บังคับให้แมพใช้ค่า JumpPower (กันบั๊กบางแมพที่ใช้เป็น JumpHeight)
+		        humanoid.JumpPower = jumpValue
+		    end
+		end
+
+		-- 1. เปลี่ยนแรงกระโดดของตัวละครปัจจุบันทันที
+		if LocalPlayer.Character then
+		    applyJump(LocalPlayer.Character)
+		end
+
+		-- 2. เคลียร์ระบบดักจับตัวเก่า (ถ้าเคยตั้งค่า Jump ไว้ก่อนหน้านี้)
+		if _G.JumpConnection then
+		    _G.JumpConnection:Disconnect()
+		end
+
+		-- 3. ตั้งค่าระบบดักจับตอนเกิดใหม่ ให้แรงกระโดดยังคงอยู่ตลอด
+		_G.JumpConnection = LocalPlayer.CharacterAdded:Connect(function(newCharacter)
+		    local humanoid = newCharacter:WaitForChild("Humanoid", 5)
+		    if humanoid then
+		        task.wait(0.1) -- หน่วงเวลาจังหวะเกิดเล็กน้อยเพื่อความเสถียร
+		        applyJump(newCharacter)
+		    end
+		end)
+})
