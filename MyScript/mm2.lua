@@ -1,4 +1,4 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/S4ad0wKhab/roblox-scripts-repo/refs/heads/main/library/polar-ui"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/polar"))()
 
 local ok = library:CreateWindow("MM2 Script 1.0")
 
