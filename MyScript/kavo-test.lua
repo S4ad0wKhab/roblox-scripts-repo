@@ -57,5 +57,35 @@ Section:NewTextBox("TextboxText", "TextboxInfo", function(txt)
 	print(txt)
 end)
 
+-- ช่องคีย์ลัด --
+Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.F, function()
+	print("You just clicked the bind")
+end)
+
+-- สลับ ui ด้วยปุ่มลัด --
+Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.F, function()
+	Library:ToggleUI()
+end)
+
+-- ช่องดรอปดาวน์ --
+Section:NewDropdown("DropdownText", "DropdownInf", {"Option 1", "Option 2", "Option 3"}, function(currentOption)
+    print(currentOption)
+end)
+-- รีเฟรชช่องดรอปดาวน์ --
+local oldList = {
+  "2019",
+  "2020"
+}
+local newList = {
+  "2021",
+  "2022"
+}
+local dropdown = Section:NewDropdown("Dropdown","Info", oldList, function()
+
+end)
+Section:NewButton("Update Dropdown", "Refreshes Dropdown", function()
+  dropdown:Refresh(newList)
+end)
+
 
 
