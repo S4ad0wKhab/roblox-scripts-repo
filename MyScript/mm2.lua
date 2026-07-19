@@ -1,4 +1,4 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/S4ad0wKhab/roblox-scripts-repo/refs/heads/main/library/orion-library.lua')))()
 
 local Window = OrionLib:MakeWindow({Name = "S4ad0wKhab's MM2 Script (Beta 1.0)", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
 
