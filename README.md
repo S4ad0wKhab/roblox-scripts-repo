@@ -18,3 +18,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/S4ad0wKhab/roblox-scr
 ```
 loadstring(game:HttpGet("https://raw.githubusercontent.com/S4ad0wKhab/roblox-scripts-repo/refs/heads/main/bring-parts.lua"))
 ```
+# My Script
+```
+loadstring(game:HttpGet("https://raw.githubusercontent.com/S4ad0wKhab/roblox-scripts-repo/refs/heads/main/MyScript/push-gui.lua"))()
+```
