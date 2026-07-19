@@ -14,3 +14,16 @@ local Tab = Window:MakeTab({
 	Icon = "rbxassetid://77451122306832",
 	PremiumOnly = false
 })
+
+local Section = Tab:AddSection({
+	Name = "Speed & Jump"
+})
+
+Tab:AddTextbox({
+	Name = "Speed",
+	Default = "16",
+	TextDisappear = true,
+	Callback = function(Value)
+		<โค้ด>
+	end	  
+})
